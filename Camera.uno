@@ -32,7 +32,15 @@ public extern(iOS) class Camera
 {
   ObjC.ID _handle;
   public CameraFacing _facing = CameraFacing.Default;
-  public CameraFacing Facing { get { return _facing; } set { _facing = value; } }
+  public CameraFacing Facing {
+    get {
+      return _facing;
+    }
+    set {
+      _facing = value;
+      RefreshCamera();
+    }
+  }
 
   public void Start() {
     debug_log("Start");
