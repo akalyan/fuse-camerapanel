@@ -143,6 +143,46 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 }
 
+- (void)configureCaptureSession:(AVCaptureSession *)session
+                 withDeviceType:(int)devicetype
+{
+  [session beginConfiguration];
+
+  //-- Remove all inputs
+  NSArray *allInputs = [session inputs];
+  for (AVCaptureInput *input in allInputs) {
+    [session removeInput:input];
+  }
+
+  //-- Set preset session size.
+  [session setSessionPreset:_sessionPreset];
+
+  //-- Creata a video device and input from that Device.  Add the input to the capture session.
+  AVCaptureDevice * videoDevice = nil;
+  NSArray *videoDevices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+  for (AVCaptureDevice *device in videoDevices) {
+      if (device.position == devicetype) {
+          videoDevice = device;
+          break;
+      }
+  }
+  if ( ! videoDevice) {
+      videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+  }
+
+  if(videoDevice == nil)
+      assert(0);
+
+  //-- Add the device to the session.
+  NSError *error;
+  AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
+  if(error)
+      assert(0);
+
+  [session addInput:input];
+  [session commitConfiguration];
+}
+
 - (void)setupAVCapture:(int)devicetype
 {
     //-- Create CVOpenGLESTextureCacheRef for optimal CVImageBufferRef to GLES texture conversion.
@@ -160,37 +200,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
     //-- Setup Capture Session.
     _session = [[AVCaptureSession alloc] init];
-    [_session beginConfiguration];
-    
-    //-- Set preset session size.
-    [_session setSessionPreset:_sessionPreset];
-    
-    //-- Creata a video device and input from that Device.  Add the input to the capture session.
-    AVCaptureDevice * videoDevice = nil;
-    if (devicetype == 2) {
-        NSArray *videoDevices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-        for (AVCaptureDevice *device in videoDevices) {
-            if (device.position == AVCaptureDevicePositionFront) {
-                videoDevice = device;
-                break;
-            }
-        }
-    }
-    if ( ! videoDevice) {
-        videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    }
 
-    if(videoDevice == nil)
-        assert(0);
-    
-    //-- Add the device to the session.
-    NSError *error;        
-    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
-    if(error)
-        assert(0);
-    
-    [_session addInput:input];
-    
+    [self configureCaptureSession:_session withDeviceType:devicetype];
+
+    //-- Setup the output
+    [_session beginConfiguration];
+
     //-- Create the output for the capture session.
     AVCaptureVideoDataOutput * dataOutput = [[AVCaptureVideoDataOutput alloc] init];
     [dataOutput setAlwaysDiscardsLateVideoFrames:YES]; // Probably want to set this to NO when recording
