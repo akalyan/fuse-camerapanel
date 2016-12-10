@@ -10,7 +10,7 @@
     	<Require Entity="Uno.Action" />
        	<Require Entity="ObjC.Object" />
        	<Require Source.Import="FuseCameraImpl.h" />
-       	<Require Source.Include="uObjC.h" />
+       	<!-- Require Source.Include="uObjC.h" /-->
        	<Method Signature="allocateCamera():ObjC.ID">
        		<Body>
        			FuseCameraImpl *fci = [[FuseCameraImpl alloc] init];
