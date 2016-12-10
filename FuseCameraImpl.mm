@@ -62,6 +62,13 @@
     [self setupAVCapture:device];
 }
 
+- (void)refresh:(int)device
+{
+    if (_session) {
+        [self configureCaptureSession:_session withDeviceType:device];
+    }
+}
+
 - (void)stopCam
 {    
     [_session stopRunning];

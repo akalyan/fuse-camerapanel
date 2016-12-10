@@ -28,6 +28,12 @@
        			[fci startCam: $1];
        		</Body>
        	</Method>
+       	<Method Signature="refresh(ObjC.ID,int)">
+       		<Body>
+       			FuseCameraImpl *fci = (FuseCameraImpl *)$0;
+       			[fci refresh: $1];
+       		</Body>
+       	</Method>
        	<Method Signature="stop(ObjC.ID)">
        		<Body>
        			FuseCameraImpl *fci = (FuseCameraImpl *)$0;

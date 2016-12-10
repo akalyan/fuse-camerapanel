@@ -45,7 +45,9 @@ public extern(iOS) class Camera
     CameraImpl.stop(_handle);
   }
 
-  public void RefreshCamera() {}
+  public void RefreshCamera() {
+    CameraImpl.refresh(_handle, (int)Facing);
+  }
 
   public Promise<PictureResult> TakePicture() {
     var p = new Promise<PictureResult>();
@@ -116,6 +118,9 @@ internal class CameraImpl
 
   [TargetSpecificImplementation]
   public static extern void start(ObjC.ID camera, int devicetype);
+
+  [TargetSpecificImplementation]
+  public static extern void refresh(ObjC.ID camera, int devicetype);
 
   [TargetSpecificImplementation]
   public static extern void stop(ObjC.ID camera);
